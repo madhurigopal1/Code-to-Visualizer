@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMS AIOps Autonomous Enterprise Console</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #003366;
+            --secondary-color: #0066cc;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --info-color: #17a2b8;
+            --light-bg: #f8f9fa;
+            --border-color: #dee2e6;
+            --text-dark: #212529;
+            --text-light: #6c757d;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        /* Sidebar */
+        sidebar {
+            background: var(--light-bg);
+            padding: 30px 20px;
+            border-right: 1px solid var(--border-color);
+            max-height: 100vh;
+            overflow-y: auto;
+        }
+
+        sidebar h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            border-bottom: 2px solid var(--secondary-color);
+            padding-bottom: 10px;
+        }
+
+        .layer-item {
+            background: white;
+            border-left: 4px solid var(--success-color);
+            padding: 12px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            font-size: 0.95em;
+            color: var(--text-dark);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .layer-item::before {
+            content: "✓";
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background: var(--success-color);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            font-size: 0.8em;
+            flex-shrink: 0;
+        }
+
+        .layer-item:hover {
+            background: var(--success-color);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        /* Content Area */
+        .content {
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        /* Section */
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: var(--primary-color);
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            border-bottom: 3px solid var(--secondary-color);
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        /* Form Styles */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: var(--text-dark);
+            font-size: 0.95em;
+        }
+
+        input[type="text"],
+        input[type="email"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-size: 1em;
+            font-family: inherit;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="text"]:focus,
+        input[type="email"]:focus,
+        select:focus,
+        textarea:focus {
+            outline: none;
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Button Styles */
+        button {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 6px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(0, 51, 102, 0.4);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #218838;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: var(--text-light);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        /* Alert Styles */
+        .alert {
+            padding: 15px 20px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            border-left: 4px solid;
+            display: none;
+        }
+
+        .alert.show {
+            display: block;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border-color: var(--success-color);
+            color: #155724;
+        }
+
+        .alert-warning {
+            background: #fff3cd;
+            border-color: var(--warning-color);
+            color: #856404;
+        }
+
+        .alert-info {
+            background: #d1ecf1;
+            border-color: var(--info-color);
+            color: #0c5460;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border-color: var(--danger-color);
+            color: #721c24;
+        }
+
+        /* Metrics Grid */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        .metric-card:hover {
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .metric-label {
+            color: var(--text-light);
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-value {
+            color: var(--primary-color);
+            font-size: 2em;
+            font-weight: 700;
+        }
+
+        /* Table Styles */
+        .table-container {
+            overflow-x: auto;
+            border-radius: 6px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        thead {
+            background: var(--light-bg);
+        }
+
+        th {
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--primary-color);
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        tr:hover {
+            background: var(--light-bg);
+        }
+
+        /* Result Styles */
+        .result-section {
+            background: var(--light-bg);
+            border-left: 4px solid var(--secondary-color);
+            padding: 20px;
+            border-radius: 6px;
+            margin-top: 20px;
+        }
+
+        .result-section h3 {
+            color: var(--primary-color);
+            margin-bottom: 15px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 12px 15px;
+            border-radius: 4px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--secondary-color);
+        }
+
+        .result-label {
+            color: var(--text-light);
+            font-size: 0.9em;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .result-value {
+            color: var(--text-dark);
+            font-weight: 600;
+            font-size: 1.1em;
+            margin-top: 5px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--border-color);
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            background: transparent;
+            border: none;
+            padding: 12px 20px;
+            font-weight: 600;
+            color: var(--text-light);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            margin-bottom: -2px;
+        }
+
+        .tab-button.active {
+            color: var(--secondary-color);
+            border-bottom-color: var(--secondary-color);
+        }
+
+        .tab-button:hover {
+            color: var(--primary-color);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .badge-warning {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .badge-danger {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .badge-info {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        /* Architecture Flow */
+        .architecture-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin: 30px 0;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .flow-item {
+            background: white;
+            border: 2px solid var(--secondary-color);
+            border-radius: 8px;
+            padding: 15px 20px;
+            flex: 1;
+            min-width: 120px;
+            text-align: center;
+            font-weight: 600;
+            color: var(--primary-color);
+            position: relative;
+        }
+
+        .flow-item::after {
+            content: "→";
+            position: absolute;
+            right: -25px;
+            font-size: 1.5em;
+            color: var(--secondary-color);
+        }
+
+        .flow-item:last-child::after {
+            content: "";
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+
+            sidebar {
+                display: none;
+            }
+
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .metrics-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .architecture-flow {
+                flex-direction: column;
+            }
+
+            .flow-item::after {
+                content: "↓";
+                position: static;
+                display: block;
+                margin-top: 10px;
+            }
+
+            .flow-item:last-child::after {
+                content: "↓";
+            }
+        }
+
+        /* Timestamp */
+        .timestamp {
+            color: var(--text-light);
+            font-size: 0.85em;
+            display: block;
+            margin-top: 10px;
+        }
+
+        /* JSON Display */
+        .json-display {
+            background: #f5f5f5;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header>
+            <h1>🚀 AMS AIOps Autonomous Enterprise Console</h1>
+            <p>AI-Driven Autonomous Incident Management & Resolution Platform</p>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <sidebar>
+                <h3>Architecture Layers</h3>
+                <div class="layer-item">Experience Layer</div>
+                <div class="layer-item">AI Orchestration Layer</div>
+                <div class="layer-item">RAG Knowledge Layer</div>
+                <div class="layer-item">AI/ML Intelligence Layer</div>
+                <div class="layer-item">Automation Layer</div>
+                <div class="layer-item">Feedback Learning Layer</div>
+            </sidebar>
+
+            <!-- Content -->
+            <div class="content">
+                <!-- Architecture Flow -->
+                <div class="section">
+                    <div class="architecture-flow">
+                        <div class="flow-item">User Input</div>
+                        <div class="flow-item">AI Agent</div>
+                        <div class="flow-item">Knowledge Retrieval</div>
+                        <div class="flow-item">Decision Engine</div>
+                        <div class="flow-item">Automation</div>
+                        <div class="flow-item">Feedback Loop</div>
+                    </div>
+                </div>
+
+                <!-- Alerts -->
+                <div id="successAlert" class="alert alert-success"></div>
+                <div id="warningAlert" class="alert alert-warning"></div>
+                <div id="infoAlert" class="alert alert-info"></div>
+
+                <!-- Tabs -->
+                <div class="tabs">
+                    <button class="tab-button active" onclick="switchTab('incident')">Incident Management</button>
+                    <button class="tab-button" onclick="switchTab('dashboard')">Dashboard</button>
+                    <button class="tab-button" onclick="switchTab('history')">Incident History</button>
+                    <button class="tab-button" onclick="switchTab('feedback')">Feedback</button>
+                </div>
+
+                <!-- Tab 1: Incident Management -->
+                <div id="incident" class="tab-content active">
+                    <div class="section">
+                        <h2>📋 Create Incident</h2>
+
+                        <div class="form-group">
+                            <label for="incidentTitle">Incident Title</label>
+                            <input type="text" id="incidentTitle" placeholder="e.g., Production Database Slow Response" value="Production Database Slow Response">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="incidentDesc">Incident Description</label>
+                            <textarea id="incidentDesc" placeholder="Describe the incident in detail...">Database response time increased by 300% during peak traffic.</textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="severity">Severity Level</label>
+                            <select id="severity">
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High" selected>High</option>
+                                <option value="Critical">Critical</option>
+                            </select>
+                        </div>
+
+                        <button class="btn-primary" onclick="analyzeIncident()">
+                            <span>Analyze Incident</span>
+                        </button>
+                    </div>
+
+                    <!-- Analysis Results -->
+                    <div id="analysisResults" style="display: none;">
+                        <div class="section">
+                            <h2>🔍 AI Analysis Results</h2>
+
+                            <div class="metrics-grid">
+                                <div class="metric-card">
+                                    <div class="metric-label">Category</div>
+                                    <div class="metric-value" id="resultCategory">-</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">AI Confidence</div>
+                                    <div class="metric-value" id="resultConfidence">-</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Severity</div>
+                                    <div class="metric-value" id="resultSeverity">-</div>
+                                </div>
+                            </div>
+
+                            <div class="result-section">
+                                <h3>Root Cause Analysis</h3>
+                                <div class="result-item">
+                                    <div class="result-label">Identified Root Cause</div>
+                                    <div class="result-value" id="rootCause">-</div>
+                                </div>
+                            </div>
+
+                            <div class="result-section">
+                                <h3>Recommended Resolution</h3>
+                                <div class="result-item">
+                                    <div class="result-label">Suggested Action</div>
+                                    <div class="result-value" id="resolution">-</div>
+                                </div>
+                            </div>
+
+                            <div class="result-section">
+                                <h3>Automation Execution</h3>
+                                <div class="result-item">
+                                    <div class="result-label">Runbook Executed</div>
+                                    <div class="result-value" id="runbookId">-</div>
+                                    <span class="timestamp" id="executionTime">-</span>
+                                </div>
+                                <button class="btn-success" onclick="confirmExecution()" style="margin-top: 15px;">
+                                    Confirm Execution
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 2: Dashboard -->
+                <div id="dashboard" class="tab-content">
+                    <div class="section">
+                        <h2>📊 Operational Dashboard</h2>
+
+                        <div class="metrics-grid">
+                            <div class="metric-card">
+                                <div class="metric-label">Total Incidents</div>
+                                <div class="metric-value" id="totalIncidents">0</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Automation Success Rate</div>
+                                <div class="metric-value" id="successRate">0%</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Avg AI Confidence</div>
+                                <div class="metric-value" id="avgConfidence">0%</div>
+                            </div>
+                            <div class="metric-card">
+                                <div class="metric-label">Incidents This Week</div>
+                                <div class="metric-value" id="weekIncidents">0</div>
+                            </div>
+                        </div>
+
+                        <div class="section">
+                            <h2>Performance Metrics</h2>
+                            <div class="metrics-grid">
+                                <div class="metric-card">
+                                    <div class="metric-label">MTTR (Minutes)</div>
+                                    <div class="metric-value" id="mttr">-</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Automation Rate</div>
+                                    <div class="metric-value" id="automationRate">-</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Critical Issues Resolved</div>
+                                    <div class="metric-value" id="criticalResolved">0</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 3: Incident History -->
+                <div id="history" class="tab-content">
+                    <div class="section">
+                        <h2>📜 Incident History</h2>
+
+                        <div class="table-container">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th>Timestamp</th>
+                                        <th>Title</th>
+                                        <th>Category</th>
+                                        <th>Severity</th>
+                                        <th>Confidence</th>
+                                        <th>Status</th>
+                                        <th>Runbook</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="historyTable">
+                                    <tr>
+                                        <td colspan="7" style="text-align: center; color: var(--text-light);">No incidents analyzed yet.</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab 4: Feedback -->
+                <div id="feedback" class="tab-content">
+                    <div class="section">
+                        <h2>📝 Continuous Learning Feedback</h2>
+
+                        <div class="form-group">
+                            <label for="feedbackQuestion">Was the AI recommendation useful?</label>
+                            <select id="feedbackQuestion">
+                                <option value="">Select feedback</option>
+                                <option value="yes">Yes - Very helpful</option>
+                                <option value="partial">Partially helpful</option>
+                                <option value="no">No - Not helpful</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="feedbackComments">Additional Comments</label>
+                            <textarea id="feedbackComments" placeholder="Please share your feedback to help us improve..."></textarea>
+                        </div>
+
+                        <button class="btn-success" onclick="submitFeedback()">Submit Feedback</button>
+
+                        <div id="feedbackResults" style="display: none; margin-top: 30px;">
+                            <h3>Feedback Statistics</h3>
+                            <div class="metrics-grid">
+                                <div class="metric-card">
+                                    <div class="metric-label">Total Feedback</div>
+                                    <div class="metric-value" id="totalFeedback">0</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Positive Feedback</div>
+                                    <div class="metric-value badge badge-success" id="positiveFeedback">0</div>
+                                </div>
+                                <div class="metric-card">
+                                    <div class="metric-label">Improvement Rate</div>
+                                    <div class="metric-value" id="improvementRate">0%</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Knowledge Base
+        const KNOWLEDGE_BASE = {
+            "database": {
+                root_cause: "Connection pool exhaustion or database performance degradation",
+                resolution: "Restart DB connection pool, validate indexes, run health checks, and monitor query performance",
+                runbook: "DB_RUNBOOK_001"
+            },
+            "api": {
+                root_cause: "High API latency due to service overload or unhealthy pods",
+                resolution: "Scale service replicas, restart unhealthy pods, and optimize response times",
+                runbook: "API_RUNBOOK_002"
+            },
+            "memory": {
+                root_cause: "Memory leak detected in application services",
+                resolution: "Restart service immediately, trigger heap analysis, and review memory usage patterns",
+                runbook: "MEM_RUNBOOK_003"
+            },
+            "network": {
+                root_cause: "Network congestion or gateway misconfiguration",
+                resolution: "Reroute traffic to alternate paths and restart network gateway",
+                runbook: "NET_RUNBOOK_004"
+            }
+        };
+
+        // Session State
+        let incidentHistory = JSON.parse(localStorage.getItem('incidentHistory')) || [];
+        let feedbackStats = JSON.parse(localStorage.getItem('feedbackStats')) || { total: 0, positive: 0, partial: 0, negative: 0 };
+
+        // Classify Incident
+        function classifyIncident(text) {
+            text = text.toLowerCase();
+            if (text.includes("database") || text.includes("db")) return "database";
+            if (text.includes("api") || text.includes("service")) return "api";
+            if (text.includes("memory") || text.includes("heap")) return "memory";
+            if (text.includes("network") || text.includes("gateway")) return "network";
+            return "database"; // default
+        }
+
+        // Generate Random Confidence
+        function getConfidence(severity) {
+            const baseConfidence = severity === "Critical" ? 0.92 : severity === "High" ? 0.87 : 0.78;
+            return Math.round((baseConfidence + Math.random() * 0.1) * 100);
+        }
+
+        // Analyze Incident
+        function analyzeIncident() {
+            const title = document.getElementById('incidentTitle').value;
+            const description = document.getElementById('incidentDesc').value;
+            const severity = document.getElementById('severity').value;
+
+            if (!title.trim() || !description.trim()) {
+                showAlert('Please fill in all required fields', 'warning');
+                return;
+            }
+
+            const category = classifyIncident(title + " " + description);
+            const knowledge = KNOWLEDGE_BASE[category];
+            const confidence = getConfidence(severity);
+            const executionId = Math.floor(Math.random() * 9000) + 1000;
+
+            // Display Results
+            document.getElementById('resultCategory').textContent = category.toUpperCase();
+            document.getElementById('resultConfidence').textContent = confidence + '%';
+            document.getElementById('resultSeverity').textContent = severity;
+            document.getElementById('rootCause').textContent = knowledge.root_cause;
+            document.getElementById('resolution').textContent = knowledge.resolution;
+            document.getElementById('runbookId').textContent = knowledge.runbook + ' (ID: ' + executionId + ')';
+            document.getElementById('executionTime').textContent = new Date().toLocaleString();
+
+            document.getElementById('analysisResults').style.display = 'block';
+
+            // Save to History
+            const record = {
+                timestamp: new Date().toLocaleString(),
+                title: title,
+                category: category,
+                severity: severity,
+                confidence: confidence,
+                runbook: knowledge.runbook,
+                status: 'PENDING'
+            };
+
+            incidentHistory.unshift(record);
+            localStorage.setItem('incidentHistory', JSON.stringify(incidentHistory));
+
+            updateDashboard();
+            updateHistoryTable();
+
+            showAlert('Incident analysis completed successfully!', 'success');
+        }
+
+        // Confirm Execution
+        function confirmExecution() {
+            if (incidentHistory.length > 0) {
+                incidentHistory[0].status = 'SUCCESS';
+                localStorage.setItem('incidentHistory', JSON.stringify(incidentHistory));
+                updateDashboard();
+                updateHistoryTable();
+                showAlert('Automation execution confirmed. Model accuracy improved.', 'success');
+            }
+        }
+
+        // Update Dashboard
+        function updateDashboard() {
+            const total = incidentHistory.length;
+            const successful = incidentHistory.filter(i => i.status === 'SUCCESS').length;
+            const avgConfidence = total > 0 ? Math.round(incidentHistory.reduce((sum, i) => sum + i.confidence, 0) / total) : 0;
+            const critical = incidentHistory.filter(i => i.severity === 'Critical').length;
+
+            document.getElementById('totalIncidents').textContent = total;
+            document.getElementById('successRate').textContent = total > 0 ? Math.round((successful / total) * 100) + '%' : '0%';
+            document.getElementById('avgConfidence').textContent = avgConfidence + '%';
+            document.getElementById('criticalResolved').textContent = critical;
+            document.getElementById('mttr').textContent = total > 0 ? Math.round(Math.random() * 30 + 5) + ' min' : '-';
+            document.getElementById('automationRate').textContent = total > 0 ? (88 + Math.random() * 10).toFixed(0) + '%' : '-';
+        }
+
+        // Update History Table
+        function updateHistoryTable() {
+            const tbody = document.getElementById('historyTable');
+            if (incidentHistory.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="7" style="text-align: center; color: var(--text-light);">No incidents analyzed yet.</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = incidentHistory.map(record => `
+                <tr>
+                    <td><small>${record.timestamp}</small></td>
+                    <td>${record.title}</td>
+                    <td><strong>${record.category.toUpperCase()}</strong></td>
+                    <td><span class="badge badge-${record.severity === 'Critical' ? 'danger' : record.severity === 'High' ? 'warning' : 'info'}">${record.severity}</span></td>
+                    <td>${record.confidence}%</td>
+                    <td><span class="badge badge-${record.status === 'SUCCESS' ? 'success' : 'warning'}">${record.status}</span></td>
+                    <td><code>${record.runbook}</code></td>
+                </tr>
+            `).join('');
+        }
+
+        // Submit Feedback
+        function submitFeedback() {
+            const feedback = document.getElementById('feedbackQuestion').value;
+            const comments = document.getElementById('feedbackComments').value;
+
+            if (!feedback) {
+                showAlert('Please select a feedback option', 'warning');
+                return;
+            }
+
+            feedbackStats.total += 1;
+            if (feedback === 'yes') {
+                feedbackStats.positive += 1;
+                showAlert('Thank you! Your positive feedback helps improve our models.', 'success');
+            } else if (feedback === 'partial') {
+                feedbackStats.partial += 1;
+                showAlert('Thank you! We will work on improvements.', 'info');
+            } else {
+                feedbackStats.negative += 1;
+                showAlert('Thank you for the feedback. We will investigate and improve.', 'warning');
+            }
+
+            localStorage.setItem('feedbackStats', JSON.stringify(feedbackStats));
+
+            document.getElementById('feedbackQuestion').value = '';
+            document.getElementById('feedbackComments').value = '';
+
+            updateFeedbackStats();
+        }
+
+        // Update Feedback Stats
+        function updateFeedbackStats() {
+            const total = feedbackStats.total;
+            const positive = feedbackStats.positive;
+
+            document.getElementById('totalFeedback').textContent = total;
+            document.getElementById('positiveFeedback').textContent = positive;
+            document.getElementById('improvementRate').textContent = total > 0 ? Math.round((positive / total) * 100) + '%' : '0%';
+
+            if (total > 0) {
+                document.getElementById('feedbackResults').style.display = 'block';
+            }
+        }
+
+        // Switch Tabs
+        function switchTab(tabName) {
+            const tabs = document.querySelectorAll('.tab-content');
+            const buttons = document.querySelectorAll('.tab-button');
+
+            tabs.forEach(tab => tab.classList.remove('active'));
+            buttons.forEach(btn => btn.classList.remove('active'));
+
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+
+            if (tabName === 'dashboard') {
+                updateDashboard();
+            } else if (tabName === 'history') {
+                updateHistoryTable();
+            } else if (tabName === 'feedback') {
+                updateFeedbackStats();
+            }
+        }
+
+        // Show Alert
+        function showAlert(message, type) {
+            const alertId = type === 'success' ? 'successAlert' : type === 'warning' ? 'warningAlert' : 'infoAlert';
+            const alert = document.getElementById(alertId);
+            alert.textContent = message;
+            alert.classList.add('show');
+
+            setTimeout(() => {
+                alert.classList.remove('show');
+            }, 4000);
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            updateDashboard();
+            updateHistoryTable();
+            updateFeedbackStats();
+        });
+    </script>
+</body>
+</html>
