@@ -1,0 +1,29 @@
+# Langraph graph example
+# This YAML describes a simple graph with an input node -> code_search tool -> LLM -> output
+
+nodes:
+  - id: input
+    type: input
+    name: User Query
+  - id: code_search
+    type: tool
+    name: Code Search
+    tool: code_search
+  - id: llm
+    type: llm
+    name: LangChain LLM
+    model: openai/gpt
+  - id: output
+    type: output
+    name: Agent Answer
+
+edges:
+  - from: input
+    to: code_search
+  - from: code_search
+    to: llm
+  - from: llm
+    to: output
+
+metadata:
+  description: "A minimal Langraph graph mapping user query to a repo-aware code search tool and then to an LLM for answer synthesis. Replace 'model' with your Langraph provider details."

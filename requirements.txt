@@ -1,0 +1,7 @@
+# Requirements for the agentic additions
+langchain
+fastapi
+uvicorn
+python-dotenv
+pydantic
+gitpython
